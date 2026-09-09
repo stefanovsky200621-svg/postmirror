@@ -82,7 +82,7 @@ export default function Home() {
   const [copyState, setCopyState] = useState<
     'idle' | 'copying' | 'copied' | 'error'
   >('idle');
-  const messageRef = useRef<HTMLTextAreaElement>(null);
+  const messageRef = useRef<HTMLPreElement>(null);
   const submitRef = useRef<HTMLButtonElement>(null);
   const selectedSize = sizes.find((size) => size.id === sizeId) ?? sizes[0];
   const selectedDelivery =
@@ -101,20 +101,16 @@ export default function Home() {
     };
     setOrderText(
       [
-        'Здравствуйте! Хочу заказать зеркало POSTMIRROR.',
-        '',
+        'Заказ POSTMIRROR',
         `ФИО: ${value('name')}`,
-        `Instagram / ссылка на пост: ${value('instagramTag')}`,
-        `Размер зеркала: ${selectedSize.id === 'custom' ? `свой размер, ${value('customSize')}` : selectedSize.label}`,
-        `Способ доставки: ${selectedDelivery.label}`,
-        `Адрес: ${value('address') || 'Самовывоз, место согласуем'}`,
-        `Telegram / Instagram для связи: ${value('telegram')}`,
-        `Телефон: ${value('phone')}`,
-        `Комментарий: ${value('comment') || 'Без комментария'}`,
-        '',
+        `Ник / пост: ${value('instagramTag')}`,
+        `Размер: ${selectedSize.id === 'custom' ? `${value('customSize')} (свой)` : selectedSize.label}`,
+        `Доставка: ${selectedDelivery.label}`,
+        ...(value('address') ? [`Адрес: ${value('address')}`] : []),
+        `Связь (TG / IG): ${value('telegram')}`,
+        `Тел.: ${value('phone')}`,
+        ...(value('comment') ? [`Комментарий: ${value('comment')}`] : []),
         `Итоговая стоимость: ${totalPrice === null ? 'цена уточняется в чате' : `${currency.format(totalPrice)} ₽`}`,
-        '',
-        'Пожалуйста, подтвердите заказ и итоговую стоимость.',
       ].join('\n'),
     );
     setCopyState('idle');
@@ -129,13 +125,22 @@ export default function Home() {
     } catch {
       // Keep the selectable message available when clipboard permission is denied.
       messageRef.current?.focus();
-      messageRef.current?.select();
+      if (messageRef.current) {
+        const range = document.createRange();
+        range.selectNodeContents(messageRef.current);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
       setCopyState('error');
     }
   }
 
   return (
     <main className="site-shell" id="top">
+      <div className="photo-backdrop" aria-hidden="true">
+        <Image src="/postmirror-background.png" alt="" fill priority unoptimized sizes="100vw" />
+      </div>
       <header className="site-header">
         <a href="#top" className="wordmark" aria-label="POSTMIRROR, главная">
           POST<span>MIRROR</span>
@@ -148,46 +153,6 @@ export default function Home() {
       </header>
 
       <div className="order-layout">
-        <aside className="brand-column">
-          <p className="eyebrow">ТВОЙ ПРОФИЛЬ. ТВОЁ ОТРАЖЕНИЕ.</p>
-          <h1>
-            Пост, в котором
-            <br />
-            главное <span>ты.</span>
-          </h1>
-          <p className="intro">
-            Зеркало в формате Instagram-поста.
-            <br />С твоим ником, подписью и историей.
-          </p>
-          <figure className="product-figure">
-            <Image
-              src="/postmirror-example-1.png"
-              alt="Визуализация POSTMIRROR: прямоугольное зеркало с ником post_mirror, без боковой рамки, в тёмном интерьере"
-              width={1122}
-              height={1402}
-              priority
-              unoptimized
-            />
-            <figcaption>
-              <span>POSTMIRROR / ВИЗУАЛИЗАЦИЯ</span>
-              <span>01</span>
-            </figcaption>
-          </figure>
-          <details className="second-example">
-            <summary>
-              Ещё один пример <ArrowDown size={18} aria-hidden="true" />
-            </summary>
-            <Image
-              src="/postmirror-example-2.png"
-              alt="Визуализация зеркала ПОСТМИРОР с персональной подписью и датой"
-              width={1122}
-              height={1402}
-              loading="lazy"
-              unoptimized
-            />
-          </details>
-        </aside>
-
         <section
           className="order-panel"
           id="order"
@@ -197,7 +162,7 @@ export default function Home() {
             <p className="eyebrow">СОЗДАДИМ ТВОЁ ЗЕРКАЛО</p>
             <span className="step-count">01 / 02</span>
           </div>
-          <h2 id="order-title">Твой заказ</h2>
+          <h1 id="order-title">Твой заказ</h1>
           <p className="panel-intro">
             Заполни форму. Мы подготовим сообщение, которое останется отправить
             нам.
@@ -398,23 +363,18 @@ export default function Home() {
             <X size={22} />
           </DialogClose>
           <DialogHeader>
-            <p className="eyebrow">ПОСЛЕДНИЙ ШАГ / 02</p>
             <DialogTitle className="dialog-title">Сообщение готово</DialogTitle>
             <DialogDescription className="dialog-description">
-              Проверь данные и скопируй текст заказа.
+              Скопируй текст или сделай скриншот.
             </DialogDescription>
           </DialogHeader>
-          <Label htmlFor="order-message" className="sr-only">
-            Текст заказа для копирования
-          </Label>
-          <Textarea
+          <pre
             id="order-message"
             ref={messageRef}
-            value={orderText}
-            readOnly
+            tabIndex={0}
+            aria-label="Текст заказа для копирования"
             className="order-message"
-            spellCheck={false}
-          />
+          >{orderText}</pre>
           <Button
             className="copy-button"
             onClick={copyOrder}
@@ -429,32 +389,27 @@ export default function Home() {
               ? 'Текст скопирован'
               : copyState === 'copying'
                 ? 'Копируем…'
-                : 'Скопировать текст заказа'}
+                : 'Скопировать заказ'}
           </Button>
           <output className="copy-status">
             {copyState === 'copied'
-              ? 'Теперь открой соцсеть ниже и вставь сообщение в переписку.'
+              ? 'Скопировано. Отправь нам в соцсети ниже.'
               : copyState === 'error'
-                ? 'Не удалось скопировать автоматически. Текст выделен: скопируй его через меню устройства или Ctrl+C / ⌘C.'
+                ? 'Текст выделен. Скопируй через меню устройства или Ctrl+C / ⌘C.'
                 : ''}
           </output>
           <div className="send-instructions">
-            <span className="instruction-label">ЧТОБЫ ОФОРМИТЬ ЗАКАЗ</span>
             <h3>
               Отправь это сообщение
-              <br />в Telegram или Instagram.
+              {' '}в Telegram или Instagram
             </h3>
             <p>
-              Перейди по кнопке ниже и вставь скопированный текст в переписку.
-              Мы ответим, чтобы подтвердить заказ.
+              Нажми кнопку ниже и отправь текст или скриншот. Мы ответим для подтверждения заказа.
             </p>
             <SocialLinks />
-            <p className="not-sent-note">
-              Заказ будет передан нам только после отправки сообщения в соцсети.
-            </p>
           </div>
           <DialogClose className="edit-order">
-            Вернуться к форме и изменить данные
+            Изменить данные
           </DialogClose>
         </DialogContent>
       </Dialog>

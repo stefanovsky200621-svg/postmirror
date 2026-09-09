@@ -27,9 +27,9 @@ export const metadata: Metadata = {
       'Выбери размер и отправь готовый текст заказа в Telegram или Instagram.',
     images: [
       {
-        url: '/postmirror-example-1.png',
-        width: 1122,
-        height: 1402,
+        url: '/postmirror-background.png',
+        width: 1536,
+        height: 1024,
         alt: 'POSTMIRROR: твой профиль, твоё отражение',
       },
     ],
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     title: 'POSTMIRROR | Зеркала на заказ',
     description:
       'Выбери размер и отправь готовый текст заказа в Telegram или Instagram.',
-    images: ['/postmirror-example-1.png'],
+    images: ['/postmirror-background.png'],
   },
 };
 
