@@ -108,7 +108,7 @@ export default function Home() {
         `Размер зеркала: ${selectedSize.id === 'custom' ? `свой размер, ${value('customSize')}` : selectedSize.label}`,
         `Способ доставки: ${selectedDelivery.label}`,
         `Адрес: ${value('address') || 'Самовывоз, место согласуем'}`,
-        `Telegram для связи: ${value('telegram')}`,
+        `Telegram / Instagram для связи: ${value('telegram')}`,
         `Телефон: ${value('phone')}`,
         `Комментарий: ${value('comment') || 'Без комментария'}`,
         '',
@@ -272,11 +272,11 @@ export default function Home() {
               </div>
               <div className="field-grid">
                 <div className="field">
-                  <Label htmlFor="telegram">Твой Telegram</Label>
+                  <Label htmlFor="telegram">Telegram / Instagram для связи</Label>
                   <Input
                     id="telegram"
                     name="telegram"
-                    placeholder="@username"
+                    placeholder="@ник в Telegram или Instagram"
                     autoComplete="username"
                     required
                     pattern=".*\S.*"
