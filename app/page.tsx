@@ -28,6 +28,10 @@ import {
   NativeSelectOption,
 } from '@/components/ui/native-select';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  AddressCombobox,
+  type AddressSuggestion,
+} from '@/components/address-combobox';
 
 const sizes = [
   { id: '50x70', label: '50 × 70 см', price: 5000 },
@@ -38,95 +42,10 @@ const deliveries = [
   { id: 'courier', label: 'Курьер по СПб', price: 900 },
   { id: 'region', label: 'Доставка по России', price: 1490 },
 ];
-const citySuggestions = [
-  'Абакан, Республика Хакасия',
-  'Анапа, Краснодарский край',
-  'Архангельск, Архангельская область',
-  'Астрахань, Астраханская область',
-  'Балаково, Саратовская область',
-  'Балашов, Саратовская область',
-  'Барнаул, Алтайский край',
-  'Белгород, Белгородская область',
-  'Благовещенск, Амурская область',
-  'Брянск, Брянская область',
-  'Великий Новгород, Новгородская область',
-  'Владивосток, Приморский край',
-  'Владикавказ, Республика Северная Осетия — Алания',
-  'Владимир, Владимирская область',
-  'Волгоград, Волгоградская область',
-  'Вологда, Вологодская область',
-  'Воронеж, Воронежская область',
-  'Екатеринбург, Свердловская область',
-  'Иваново, Ивановская область',
-  'Ижевск, Удмуртская Республика',
-  'Иркутск, Иркутская область',
-  'Йошкар-Ола, Республика Марий Эл',
-  'Казань, Республика Татарстан',
-  'Калининград, Калининградская область',
-  'Калуга, Калужская область',
-  'Кемерово, Кемеровская область',
-  'Киров, Кировская область',
-  'Краснодар, Краснодарский край',
-  'Красноярск, Красноярский край',
-  'Курган, Курганская область',
-  'Курск, Курская область',
-  'Липецк, Липецкая область',
-  'Магнитогорск, Челябинская область',
-  'Махачкала, Республика Дагестан',
-  'Москва',
-  'Мурманск, Мурманская область',
-  'Набережные Челны, Республика Татарстан',
-  'Нижний Новгород, Нижегородская область',
-  'Новокузнецк, Кемеровская область',
-  'Новороссийск, Краснодарский край',
-  'Новосибирск, Новосибирская область',
-  'Омск, Омская область',
-  'Орёл, Орловская область',
-  'Оренбург, Оренбургская область',
-  'Пенза, Пензенская область',
-  'Пермь, Пермский край',
-  'Петрозаводск, Республика Карелия',
-  'Псков, Псковская область',
-  'Ростов-на-Дону, Ростовская область',
-  'Рязань, Рязанская область',
-  'Самара, Самарская область',
-  'Санкт-Петербург',
-  'Саранск, Республика Мордовия',
-  'Саратов, Саратовская область',
-  'Смоленск, Смоленская область',
-  'Сочи, Краснодарский край',
-  'Ставрополь, Ставропольский край',
-  'Сургут, Ханты-Мансийский автономный округ',
-  'Тамбов, Тамбовская область',
-  'Тверь, Тверская область',
-  'Тольятти, Самарская область',
-  'Томск, Томская область',
-  'Тула, Тульская область',
-  'Тюмень, Тюменская область',
-  'Улан-Удэ, Республика Бурятия',
-  'Ульяновск, Ульяновская область',
-  'Уфа, Республика Башкортостан',
-  'Хабаровск, Хабаровский край',
-  'Чебоксары, Чувашская Республика',
-  'Челябинск, Челябинская область',
-  'Череповец, Вологодская область',
-  'Чита, Забайкальский край',
-  'Энгельс, Саратовская область',
-  'Якутск, Республика Саха (Якутия)',
-  'Ярославль, Ярославская область',
-];
 const currency = new Intl.NumberFormat('ru-RU');
 const telegramUrl = 'https://t.me/post_miror_zakaz';
 const instagramUrl =
   'https://www.instagram.com/post_mirror?stkn=MTdhM3pocnBjNXVjbw%3D%3D&utm_source=qr';
-
-function regionFirst(suggestion: string) {
-  const separatorIndex = suggestion.indexOf(', ');
-  if (separatorIndex === -1) return suggestion;
-  const city = suggestion.slice(0, separatorIndex);
-  const region = suggestion.slice(separatorIndex + 2);
-  return `${region}, ${city}`;
-}
 
 function SocialLinks() {
   return (
@@ -162,6 +81,12 @@ function SocialLinks() {
 export default function Home() {
   const [sizeId, setSizeId] = useState('50x70');
   const [deliveryId, setDeliveryId] = useState('pickup');
+  const [region, setRegion] = useState<AddressSuggestion | null>(null);
+  const [locality, setLocality] = useState<AddressSuggestion | null>(null);
+  const [settlement, setSettlement] = useState<AddressSuggestion | null>(null);
+  const [street, setStreet] = useState<AddressSuggestion | null>(null);
+  const [house, setHouse] = useState<AddressSuggestion | null>(null);
+  const [addressError, setAddressError] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [orderText, setOrderText] = useState('');
   const [copyState, setCopyState] = useState<
@@ -184,13 +109,25 @@ export default function Home() {
       const entry = data.get(key);
       return typeof entry === 'string' ? entry.trim() : '';
     };
-    const address = [
-      value('regionCity'),
-      value('streetHouse'),
-      value('addressDetails'),
-    ]
-      .filter(Boolean)
-      .join(', ');
+    if (deliveryId !== 'pickup' && (!region || !locality || !street || !house)) {
+      setAddressError('Выбери обязательные части адреса из подсказок.');
+      return;
+    }
+    setAddressError('');
+    const addressParts = [
+      region?.label,
+      locality?.label,
+      settlement?.label,
+      street?.label,
+      house?.label,
+      value('apartment'),
+    ].filter((part): part is string => Boolean(part));
+    const address =
+      deliveryId === 'pickup'
+        ? ''
+        : addressParts
+            .filter((part, index) => part !== addressParts[index - 1])
+            .join(', ');
     setOrderText(
       [
         'Заказ POSTMIRROR',
@@ -342,7 +279,10 @@ export default function Home() {
                   id="delivery"
                   name="delivery"
                   value={deliveryId}
-                  onChange={(event) => setDeliveryId(event.target.value)}
+                  onChange={(event) => {
+                    setDeliveryId(event.target.value);
+                    setAddressError('');
+                  }}
                 >
                   {deliveries.map((delivery) => (
                     <NativeSelectOption key={delivery.id} value={delivery.id}>
@@ -355,63 +295,142 @@ export default function Home() {
                 className="address-fields"
                 hidden={deliveryId === 'pickup'}
               >
+                <p className="address-guide" id="address-guide">
+                  Начни вводить минимум 2 буквы и обязательно выбери вариант из
+                  списка. Следующее поле откроется после выбора.
+                </p>
+                <AddressCombobox
+                  id="region"
+                  label="Область, край или республика"
+                  level="region"
+                  placeholder="Например, Саратовская область"
+                  value={region}
+                  onChange={(next) => {
+                    setRegion(next);
+                    setLocality(null);
+                    setSettlement(null);
+                    setStreet(null);
+                    setHouse(null);
+                    setAddressError('');
+                  }}
+                  required={deliveryId !== 'pickup'}
+                  invalid={Boolean(addressError && !region)}
+                />
+                <AddressCombobox
+                  key={region?.id ?? 'region'}
+                  id="locality"
+                  label="Город или район"
+                  level="locality"
+                  placeholder="Например, Балаково"
+                  value={locality}
+                  onChange={(next) => {
+                    setLocality(next);
+                    setSettlement(null);
+                    setStreet(null);
+                    setHouse(null);
+                    setAddressError('');
+                  }}
+                  disabled={!region}
+                  required={deliveryId !== 'pickup'}
+                  invalid={Boolean(addressError && !locality)}
+                  regionFiasId={region?.regionFiasId}
+                />
+                <AddressCombobox
+                  key={locality?.id ?? 'locality'}
+                  id="settlement"
+                  label="Посёлок, село или деревня"
+                  level="settlement"
+                  placeholder="Например, посёлок Новониколаевский"
+                  value={settlement}
+                  onChange={(next) => {
+                    setSettlement(next);
+                    setStreet(null);
+                    setHouse(null);
+                    setAddressError('');
+                  }}
+                  disabled={!locality}
+                  optional
+                  regionFiasId={locality?.regionFiasId}
+                  areaFiasId={locality?.areaFiasId}
+                  cityFiasId={locality?.cityFiasId}
+                />
+                <AddressCombobox
+                  key={`${locality?.id ?? 'locality'}:${settlement?.id ?? 'no-settlement'}`}
+                  id="street"
+                  label="Улица"
+                  level="street"
+                  placeholder="Например, улица Ленина"
+                  value={street}
+                  onChange={(next) => {
+                    setStreet(next);
+                    setHouse(null);
+                    setAddressError('');
+                  }}
+                  disabled={!locality}
+                  required={deliveryId !== 'pickup'}
+                  invalid={Boolean(addressError && !street)}
+                  regionFiasId={
+                    settlement?.regionFiasId ?? locality?.regionFiasId
+                  }
+                  areaFiasId={settlement?.areaFiasId ?? locality?.areaFiasId}
+                  cityFiasId={settlement?.cityFiasId ?? locality?.cityFiasId}
+                  settlementFiasId={settlement?.settlementFiasId}
+                />
+                <AddressCombobox
+                  key={street?.id ?? 'house'}
+                  id="house"
+                  label="Дом"
+                  level="house"
+                  placeholder="Например, дом 15"
+                  value={house}
+                  onChange={(next) => {
+                    setHouse(next);
+                    setAddressError('');
+                  }}
+                  disabled={!street}
+                  required={deliveryId !== 'pickup'}
+                  invalid={Boolean(addressError && !house)}
+                  regionFiasId={
+                    street?.regionFiasId ??
+                    settlement?.regionFiasId ??
+                    locality?.regionFiasId
+                  }
+                  areaFiasId={
+                    street?.areaFiasId ??
+                    settlement?.areaFiasId ??
+                    locality?.areaFiasId
+                  }
+                  cityFiasId={
+                    street?.cityFiasId ??
+                    settlement?.cityFiasId ??
+                    locality?.cityFiasId
+                  }
+                  settlementFiasId={
+                    street?.settlementFiasId ?? settlement?.settlementFiasId
+                  }
+                  streetFiasId={street?.streetFiasId}
+                />
                 <div className="field">
-                  <Label htmlFor="regionCity">Регион и город</Label>
-                  <Input
-                    id="regionCity"
-                    name="regionCity"
-                    placeholder="Например, Саратовская область, Балаково"
-                    autoComplete="address-level2"
-                    list="city-suggestions"
-                    aria-describedby="address-hint"
-                    required={deliveryId !== 'pickup'}
-                    disabled={deliveryId === 'pickup'}
-                    pattern=".*\S.*"
-                    maxLength={200}
-                  />
-                  <datalist id="city-suggestions">
-                    {citySuggestions.map((city) => (
-                      <option
-                        key={city}
-                        value={regionFirst(city)}
-                        label={city}
-                      >
-                        {city}
-                      </option>
-                    ))}
-                  </datalist>
-                  <p id="address-hint" className="field-hint">
-                    Начни вводить город — подсказка подставит регион и город в
-                    правильном порядке.
-                  </p>
-                </div>
-                <div className="field">
-                  <Label htmlFor="streetHouse">Улица и дом</Label>
-                  <Input
-                    id="streetHouse"
-                    name="streetHouse"
-                    placeholder="Например, улица Ленина, дом 15"
-                    autoComplete="address-line1"
-                    required={deliveryId !== 'pickup'}
-                    disabled={deliveryId === 'pickup'}
-                    pattern=".*\S.*"
-                    maxLength={250}
-                  />
-                </div>
-                <div className="field">
-                  <Label htmlFor="addressDetails">
-                    Квартира и другие уточнения{' '}
+                  <Label htmlFor="apartment">
+                    Квартира и уточнения{' '}
                     <span className="optional">(необязательно)</span>
                   </Label>
                   <Input
-                    id="addressDetails"
-                    name="addressDetails"
-                    placeholder="Например, квартира 24, подъезд 2, этаж 6"
+                    id="apartment"
+                    name="apartment"
+                    placeholder="Квартира 24, подъезд 2, этаж 6"
                     autoComplete="address-line2"
                     disabled={deliveryId === 'pickup'}
                     maxLength={250}
                   />
                 </div>
+                <p className="address-error" role="alert">
+                  {addressError}
+                </p>
+                <p className="address-provider">
+                  Подсказки предоставляет DaData на основе ФИАС. Введённые
+                  фрагменты адреса отправляются сервису для поиска.
+                </p>
               </div>
               <div className="field">
                 <Label htmlFor="comment">

@@ -319,6 +319,106 @@
   font-size: 13px;
   line-height: 1.55;
 }
+.address-guide {
+  margin: 0;
+  padding: 12px 14px;
+  border-left: 2px solid #d8dbe2;
+  background: #25272ac7;
+  color: #d0d2d7;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.address-combobox [data-slot='input-group'] {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #484b52;
+  border-radius: 6px;
+  background: #111315;
+  box-shadow: none;
+}
+.address-combobox [data-slot='input-group']:focus-within {
+  border-color: #b9bdc6;
+  box-shadow: 0 0 0 2px #f5f5f51c;
+}
+.address-combobox [data-slot='input-group-input'] {
+  min-height: 46px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.address-combobox [data-slot='input-group-input']:focus-visible {
+  outline: none;
+}
+.address-combobox [data-slot='input-group']:has([aria-invalid='true']) {
+  border-color: #e68989;
+}
+.address-field-status {
+  display: flex;
+  min-height: 0;
+  align-items: center;
+  gap: 7px;
+  color: #b8bcc5;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.address-field-status:empty {
+  display: none;
+}
+.address-loader {
+  width: 14px;
+  height: 14px;
+  animation: address-spin 0.8s linear infinite;
+}
+.address-suggestions {
+  border: 1px solid #555960;
+  background: #16181b;
+  box-shadow: 0 18px 50px #000b;
+}
+.address-suggestion {
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 34px 10px 10px;
+}
+.address-suggestion > svg {
+  margin-top: 2px;
+  color: #aeb2bb;
+}
+.address-suggestion > span {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+.address-suggestion strong {
+  color: #f0f1f3;
+  font-size: 14px;
+  font-weight: 600;
+}
+.address-suggestion small {
+  color: #aeb1b9;
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: normal;
+}
+.address-error {
+  margin: -6px 0 0;
+  color: #ffb2b2;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.address-error:empty {
+  display: none;
+}
+.address-provider {
+  margin: -4px 0 0;
+  color: #8f939b;
+  font-size: 11px;
+  line-height: 1.55;
+}
+@keyframes address-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 .price-summary {
   border-top: 1px solid #45484d;
   padding-top: 22px;
