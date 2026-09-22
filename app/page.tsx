@@ -77,8 +77,6 @@ function SocialLinks() {
 export default function Home() {
   const [sizeId, setSizeId] = useState('50x70');
   const [deliveryId, setDeliveryId] = useState('pickup');
-  const [telegramContact, setTelegramContact] = useState('');
-  const [instagramContact, setInstagramContact] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [orderText, setOrderText] = useState('');
   const [copyState, setCopyState] = useState<
@@ -109,8 +107,7 @@ export default function Home() {
         `Размер: ${selectedSize.id === 'custom' ? `${value('customSize')} (свой)` : selectedSize.label}`,
         `Доставка: ${selectedDelivery.label}`,
         ...(value('address') ? [`Адрес: ${value('address')}`] : []),
-        ...(value('telegram') ? [`Telegram: ${value('telegram')}`] : []),
-        ...(value('instagramContact') ? [`Instagram: ${value('instagramContact')}`] : []),
+        `Instagram: ${value('instagramContact')}`,
         `Тел.: ${value('phone')}`,
         ...(value('comment') ? [`Комментарий: ${value('comment')}`] : []),
         `Итоговая стоимость: ${totalPrice === null ? 'цена уточняется в чате' : `${currency.format(totalPrice)} ₽`}`,
@@ -238,37 +235,17 @@ export default function Home() {
               </div>
               <div className="field-grid">
                 <div className="field">
-                  <Label htmlFor="telegram">Telegram для связи</Label>
-                  <Input
-                    id="telegram"
-                    name="telegram"
-                    placeholder="@ник в Telegram"
-                    autoComplete="username"
-                    value={telegramContact}
-                    onChange={(event) => setTelegramContact(event.target.value)}
-                    required={!instagramContact.trim()}
-                    aria-describedby="contact-hint"
-                    pattern=".*\S.*"
-                    maxLength={100}
-                  />
-                </div>
-                <div className="field">
                   <Label htmlFor="instagramContact">Instagram для связи</Label>
                   <Input
                     id="instagramContact"
                     name="instagramContact"
                     placeholder="@ник в Instagram"
                     autoComplete="off"
-                    value={instagramContact}
-                    onChange={(event) => setInstagramContact(event.target.value)}
-                    required={!telegramContact.trim()}
-                    aria-describedby="contact-hint"
+                    required
                     pattern=".*\S.*"
                     maxLength={100}
                   />
                 </div>
-              </div>
-              <p id="contact-hint" className="text-sm text-muted-foreground">Укажи хотя бы один аккаунт для связи: Telegram или Instagram.</p>
                 <div className="field">
                   <Label htmlFor="phone">Номер телефона</Label>
                   <Input
@@ -282,6 +259,7 @@ export default function Home() {
                     maxLength={40}
                   />
                 </div>
+              </div>
               <div className="field">
                 <Label htmlFor="delivery">Способ доставки</Label>
                 <NativeSelect
