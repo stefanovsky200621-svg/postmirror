@@ -38,6 +38,83 @@ const deliveries = [
   { id: 'courier', label: 'Курьер по городу', price: 900 },
   { id: 'region', label: 'Доставка по России', price: 1490 },
 ];
+const citySuggestions = [
+  'Абакан, Республика Хакасия',
+  'Анапа, Краснодарский край',
+  'Архангельск, Архангельская область',
+  'Астрахань, Астраханская область',
+  'Балаково, Саратовская область',
+  'Балашов, Саратовская область',
+  'Барнаул, Алтайский край',
+  'Белгород, Белгородская область',
+  'Благовещенск, Амурская область',
+  'Брянск, Брянская область',
+  'Великий Новгород, Новгородская область',
+  'Владивосток, Приморский край',
+  'Владикавказ, Республика Северная Осетия — Алания',
+  'Владимир, Владимирская область',
+  'Волгоград, Волгоградская область',
+  'Вологда, Вологодская область',
+  'Воронеж, Воронежская область',
+  'Екатеринбург, Свердловская область',
+  'Иваново, Ивановская область',
+  'Ижевск, Удмуртская Республика',
+  'Иркутск, Иркутская область',
+  'Йошкар-Ола, Республика Марий Эл',
+  'Казань, Республика Татарстан',
+  'Калининград, Калининградская область',
+  'Калуга, Калужская область',
+  'Кемерово, Кемеровская область',
+  'Киров, Кировская область',
+  'Краснодар, Краснодарский край',
+  'Красноярск, Красноярский край',
+  'Курган, Курганская область',
+  'Курск, Курская область',
+  'Липецк, Липецкая область',
+  'Магнитогорск, Челябинская область',
+  'Махачкала, Республика Дагестан',
+  'Москва',
+  'Мурманск, Мурманская область',
+  'Набережные Челны, Республика Татарстан',
+  'Нижний Новгород, Нижегородская область',
+  'Новокузнецк, Кемеровская область',
+  'Новороссийск, Краснодарский край',
+  'Новосибирск, Новосибирская область',
+  'Омск, Омская область',
+  'Орёл, Орловская область',
+  'Оренбург, Оренбургская область',
+  'Пенза, Пензенская область',
+  'Пермь, Пермский край',
+  'Петрозаводск, Республика Карелия',
+  'Псков, Псковская область',
+  'Ростов-на-Дону, Ростовская область',
+  'Рязань, Рязанская область',
+  'Самара, Самарская область',
+  'Санкт-Петербург',
+  'Саранск, Республика Мордовия',
+  'Саратов, Саратовская область',
+  'Смоленск, Смоленская область',
+  'Сочи, Краснодарский край',
+  'Ставрополь, Ставропольский край',
+  'Сургут, Ханты-Мансийский автономный округ',
+  'Тамбов, Тамбовская область',
+  'Тверь, Тверская область',
+  'Тольятти, Самарская область',
+  'Томск, Томская область',
+  'Тула, Тульская область',
+  'Тюмень, Тюменская область',
+  'Улан-Удэ, Республика Бурятия',
+  'Ульяновск, Ульяновская область',
+  'Уфа, Республика Башкортостан',
+  'Хабаровск, Хабаровский край',
+  'Чебоксары, Чувашская Республика',
+  'Челябинск, Челябинская область',
+  'Череповец, Вологодская область',
+  'Чита, Забайкальский край',
+  'Энгельс, Саратовская область',
+  'Якутск, Республика Саха (Якутия)',
+  'Ярославль, Ярославская область',
+];
 const currency = new Intl.NumberFormat('ru-RU');
 const telegramUrl = 'https://t.me/post_miror_zakaz';
 const instagramUrl =
@@ -107,7 +184,6 @@ export default function Home() {
         `Размер: ${selectedSize.id === 'custom' ? `${value('customSize')} (свой)` : selectedSize.label}`,
         `Доставка: ${selectedDelivery.label}`,
         ...(value('address') ? [`Адрес: ${value('address')}`] : []),
-        `Instagram: ${value('instagramContact')}`,
         `Тел.: ${value('phone')}`,
         ...(value('comment') ? [`Комментарий: ${value('comment')}`] : []),
         `Итоговая стоимость: ${totalPrice === null ? 'цена уточняется в чате' : `${currency.format(totalPrice)} ₽`}`,
@@ -124,7 +200,6 @@ export default function Home() {
       setCopyState('copied');
     } catch {
       // Keep the selectable message available when clipboard permission is denied.
-      messageRef.current?.focus();
       if (messageRef.current) {
         const range = document.createRange();
         range.selectNodeContents(messageRef.current);
@@ -233,32 +308,18 @@ export default function Home() {
                   maxLength={200}
                 />
               </div>
-              <div className="field-grid">
-                <div className="field">
-                  <Label htmlFor="instagramContact">Instagram для связи</Label>
-                  <Input
-                    id="instagramContact"
-                    name="instagramContact"
-                    placeholder="@ник в Instagram"
-                    autoComplete="off"
-                    required
-                    pattern=".*\S.*"
-                    maxLength={100}
-                  />
-                </div>
-                <div className="field">
-                  <Label htmlFor="phone">Номер телефона</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="+7 999 123-45-67"
-                    autoComplete="tel"
-                    required
-                    pattern=".*\S.*"
-                    maxLength={40}
-                  />
-                </div>
+              <div className="field">
+                <Label htmlFor="phone">Номер телефона</Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  placeholder="+7 999 123-45-67"
+                  autoComplete="tel"
+                  required
+                  pattern=".*\S.*"
+                  maxLength={40}
+                />
               </div>
               <div className="field">
                 <Label htmlFor="delivery">Способ доставки</Label>
@@ -289,10 +350,23 @@ export default function Home() {
                   name="address"
                   placeholder="Город, улица, дом, квартира"
                   autoComplete="street-address"
+                  list="city-suggestions"
+                  aria-describedby="address-hint"
                   required={deliveryId !== 'pickup'}
                   pattern=".*\S.*"
                   maxLength={500}
                 />
+                <datalist id="city-suggestions">
+                  {citySuggestions.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
+                </datalist>
+                <p id="address-hint" className="field-hint">
+                  Начни вводить город — для популярных городов появятся подсказки.
+                  Улицу и дом допиши вручную.
+                </p>
               </div>
               <div className="field">
                 <Label htmlFor="comment">
@@ -371,7 +445,6 @@ export default function Home() {
           <pre
             id="order-message"
             ref={messageRef}
-            tabIndex={0}
             aria-label="Текст заказа для копирования"
             className="order-message"
           >{orderText}</pre>
