@@ -120,6 +120,14 @@ const telegramUrl = 'https://t.me/post_miror_zakaz';
 const instagramUrl =
   'https://www.instagram.com/post_mirror?stkn=MTdhM3pocnBjNXVjbw%3D%3D&utm_source=qr';
 
+function regionFirst(suggestion: string) {
+  const separatorIndex = suggestion.indexOf(', ');
+  if (separatorIndex === -1) return suggestion;
+  const city = suggestion.slice(0, separatorIndex);
+  const region = suggestion.slice(separatorIndex + 2);
+  return `${region}, ${city}`;
+}
+
 function SocialLinks() {
   return (
     <div className="social-links">
@@ -176,6 +184,13 @@ export default function Home() {
       const entry = data.get(key);
       return typeof entry === 'string' ? entry.trim() : '';
     };
+    const address = [
+      value('regionCity'),
+      value('streetHouse'),
+      value('addressDetails'),
+    ]
+      .filter(Boolean)
+      .join(', ');
     setOrderText(
       [
         'Заказ POSTMIRROR',
@@ -183,7 +198,7 @@ export default function Home() {
         `Ник / пост: ${value('instagramTag')}`,
         `Размер: ${selectedSize.id === 'custom' ? `${value('customSize')} (свой)` : selectedSize.label}`,
         `Доставка: ${selectedDelivery.label}`,
-        ...(value('address') ? [`Адрес: ${value('address')}`] : []),
+        ...(address ? [`Адрес: ${address}`] : []),
         `Тел.: ${value('phone')}`,
         ...(value('comment') ? [`Комментарий: ${value('comment')}`] : []),
         `Итоговая стоимость: ${totalPrice === null ? 'цена уточняется в чате' : `${currency.format(totalPrice)} ₽`}`,
@@ -336,31 +351,67 @@ export default function Home() {
                   ))}
                 </NativeSelect>
               </div>
-              <div className="field" hidden={deliveryId === 'pickup'}>
-                <Label htmlFor="address">Адрес</Label>
-                <Input
-                  id="address"
-                  name="address"
-                  placeholder="Город, улица, дом, квартира"
-                  autoComplete="street-address"
-                  list="city-suggestions"
-                  aria-describedby="address-hint"
-                  required={deliveryId !== 'pickup'}
-                  disabled={deliveryId === 'pickup'}
-                  pattern=".*\S.*"
-                  maxLength={500}
-                />
-                <datalist id="city-suggestions">
-                  {citySuggestions.map((city) => (
-                    <option key={city} value={city}>
-                      {city}
-                    </option>
-                  ))}
-                </datalist>
-                <p id="address-hint" className="field-hint">
-                  Начни вводить город — для популярных городов появятся подсказки.
-                  Улицу и дом допиши вручную.
-                </p>
+              <div
+                className="address-fields"
+                hidden={deliveryId === 'pickup'}
+              >
+                <div className="field">
+                  <Label htmlFor="regionCity">Регион и город</Label>
+                  <Input
+                    id="regionCity"
+                    name="regionCity"
+                    placeholder="Например, Саратовская область, Балаково"
+                    autoComplete="address-level2"
+                    list="city-suggestions"
+                    aria-describedby="address-hint"
+                    required={deliveryId !== 'pickup'}
+                    disabled={deliveryId === 'pickup'}
+                    pattern=".*\S.*"
+                    maxLength={200}
+                  />
+                  <datalist id="city-suggestions">
+                    {citySuggestions.map((city) => (
+                      <option
+                        key={city}
+                        value={regionFirst(city)}
+                        label={city}
+                      >
+                        {city}
+                      </option>
+                    ))}
+                  </datalist>
+                  <p id="address-hint" className="field-hint">
+                    Начни вводить город — подсказка подставит регион и город в
+                    правильном порядке.
+                  </p>
+                </div>
+                <div className="field">
+                  <Label htmlFor="streetHouse">Улица и дом</Label>
+                  <Input
+                    id="streetHouse"
+                    name="streetHouse"
+                    placeholder="Например, улица Ленина, дом 15"
+                    autoComplete="address-line1"
+                    required={deliveryId !== 'pickup'}
+                    disabled={deliveryId === 'pickup'}
+                    pattern=".*\S.*"
+                    maxLength={250}
+                  />
+                </div>
+                <div className="field">
+                  <Label htmlFor="addressDetails">
+                    Квартира и другие уточнения{' '}
+                    <span className="optional">(необязательно)</span>
+                  </Label>
+                  <Input
+                    id="addressDetails"
+                    name="addressDetails"
+                    placeholder="Например, квартира 24, подъезд 2, этаж 6"
+                    autoComplete="address-line2"
+                    disabled={deliveryId === 'pickup'}
+                    maxLength={250}
+                  />
+                </div>
               </div>
               <div className="field">
                 <Label htmlFor="comment">

@@ -261,6 +261,13 @@
 .field[hidden] {
   display: none;
 }
+.address-fields {
+  display: grid;
+  gap: 18px;
+}
+.address-fields[hidden] {
+  display: none;
+}
 .price-summary strong.custom-price {
   font-size: 22px;
   line-height: 1.35;
