@@ -34,15 +34,14 @@ import {
 } from '@/components/address-combobox';
 
 const sizes = [
-  { id: '50x70', label: '50 × 70 см', price: 5000 },
-  { id: 'custom', label: 'Свой размер', price: null },
+  { id: '50x70', label: '50 × 70 см' },
+  { id: 'custom', label: 'Свой размер' },
 ];
 const deliveries = [
-  { id: 'pickup', label: 'Самовывоз', price: 0 },
-  { id: 'courier', label: 'Курьер по СПб', price: 900 },
-  { id: 'region', label: 'Доставка по России', price: 1490 },
+  { id: 'pickup', label: 'Самовывоз' },
+  { id: 'courier', label: 'Курьер по СПб' },
+  { id: 'region', label: 'Доставка по России' },
 ];
-const currency = new Intl.NumberFormat('ru-RU');
 const telegramUrl = 'https://t.me/post_miror_zakaz';
 const instagramUrl =
   'https://www.instagram.com/post_mirror?stkn=MTdhM3pocnBjNXVjbw%3D%3D&utm_source=qr';
@@ -97,10 +96,6 @@ export default function Home() {
   const selectedSize = sizes.find((size) => size.id === sizeId) ?? sizes[0];
   const selectedDelivery =
     deliveries.find((delivery) => delivery.id === deliveryId) ?? deliveries[0];
-  const totalPrice =
-    selectedSize.price === null
-      ? null
-      : selectedSize.price + selectedDelivery.price;
 
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -138,7 +133,6 @@ export default function Home() {
         ...(address ? [`Адрес: ${address}`] : []),
         `Тел.: ${value('phone')}`,
         ...(value('comment') ? [`Комментарий: ${value('comment')}`] : []),
-        `Итоговая стоимость: ${totalPrice === null ? 'цена уточняется в чате' : `${currency.format(totalPrice)} ₽`}`,
       ].join('\n'),
     );
     setCopyState('idle');
@@ -222,10 +216,7 @@ export default function Home() {
                 >
                   {sizes.map((size) => (
                     <NativeSelectOption key={size.id} value={size.id}>
-                      {size.label} ·{' '}
-                      {size.price === null
-                        ? 'цена уточняется в чате'
-                        : `${currency.format(size.price)} ₽`}
+                      {size.label}
                     </NativeSelectOption>
                   ))}
                 </NativeSelect>
@@ -286,7 +277,7 @@ export default function Home() {
                 >
                   {deliveries.map((delivery) => (
                     <NativeSelectOption key={delivery.id} value={delivery.id}>
-                      {delivery.label} · {currency.format(delivery.price)} ₽
+                      {delivery.label}
                     </NativeSelectOption>
                   ))}
                 </NativeSelect>
@@ -447,31 +438,9 @@ export default function Home() {
               </div>
             </fieldset>
 
-            <div
-              className="price-summary"
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              <div>
-                <span>Предварительная стоимость</span>
-                <strong
-                  className={totalPrice === null ? 'custom-price' : undefined}
-                >
-                  {totalPrice === null ? (
-                    'Цена уточняется в чате'
-                  ) : (
-                    <>
-                      {currency.format(totalPrice)} <span>₽</span>
-                    </>
-                  )}
-                </strong>
-              </div>
-              <p>
-                {selectedSize.price === null
-                  ? 'Рассчитаем стоимость по твоим размерам в переписке.'
-                  : `Зеркало ${currency.format(selectedSize.price)} ₽ + доставка ${currency.format(selectedDelivery.price)} ₽. Итог подтвердим в переписке.`}
-              </p>
-            </div>
+            <p className="order-terms-note">
+              Стоимость и сроки уточним в переписке после получения заявки.
+            </p>
             <Button ref={submitRef} type="submit" className="order-submit">
               Оформить заказ <ArrowRight aria-hidden="true" />
             </Button>

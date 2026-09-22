@@ -268,13 +268,6 @@
 .address-fields[hidden] {
   display: none;
 }
-.price-summary strong.custom-price {
-  font-size: 22px;
-  line-height: 1.35;
-  white-space: normal;
-  text-align: right;
-  max-width: 230px;
-}
 .field label {
   font-size: 14px;
   line-height: 1.5;
@@ -419,36 +412,13 @@
     transform: rotate(360deg);
   }
 }
-.price-summary {
+.order-terms-note {
+  margin: 0 0 20px;
   border-top: 1px solid #45484d;
   padding-top: 22px;
-}
-.price-summary > div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-.price-summary > div > span {
   color: #c4c6cc;
   font-size: 14px;
-  max-width: 150px;
-}
-.price-summary strong {
-  font-size: clamp(28px, 3vw, 36px);
-  font-weight: 600;
-  letter-spacing: -0.04em;
-  white-space: nowrap;
-}
-.price-summary strong span {
-  color: #a5a8b0;
-  font-weight: 400;
-}
-.price-summary p {
-  color: #a7abb3;
-  font-size: 13px;
   line-height: 1.6;
-  margin: 12px 0 24px;
 }
 .order-submit,
 .copy-button {
