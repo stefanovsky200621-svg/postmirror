@@ -35,7 +35,7 @@ const sizes = [
 ];
 const deliveries = [
   { id: 'pickup', label: 'Самовывоз', price: 0 },
-  { id: 'courier', label: 'Курьер по городу', price: 900 },
+  { id: 'courier', label: 'Курьер по СПб', price: 900 },
   { id: 'region', label: 'Доставка по России', price: 1490 },
 ];
 const citySuggestions = [
@@ -336,15 +336,8 @@ export default function Home() {
                   ))}
                 </NativeSelect>
               </div>
-              <div className="field">
-                <Label htmlFor="address">
-                  Адрес{' '}
-                  {deliveryId === 'pickup' && (
-                    <span className="optional">
-                      (необязательно при самовывозе)
-                    </span>
-                  )}
-                </Label>
+              <div className="field" hidden={deliveryId === 'pickup'}>
+                <Label htmlFor="address">Адрес</Label>
                 <Input
                   id="address"
                   name="address"
@@ -353,6 +346,7 @@ export default function Home() {
                   list="city-suggestions"
                   aria-describedby="address-hint"
                   required={deliveryId !== 'pickup'}
+                  disabled={deliveryId === 'pickup'}
                   pattern=".*\S.*"
                   maxLength={500}
                 />
@@ -376,7 +370,7 @@ export default function Home() {
                 <Textarea
                   id="comment"
                   name="comment"
-                  placeholder="Подпись, памятная дата и другие детали"
+                  placeholder="(пример) Надпись «Ты прекрасна», дата 14.02.2026"
                   rows={3}
                   maxLength={2000}
                 />
