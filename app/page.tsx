@@ -104,17 +104,24 @@ export default function Home() {
       const entry = data.get(key);
       return typeof entry === 'string' ? entry.trim() : '';
     };
-    if (deliveryId !== 'pickup' && (!region || !locality || !street || !house)) {
-      setAddressError('Выбери обязательные части адреса из подсказок.');
+    const regionValue = value('region');
+    const localityValue = value('locality');
+    const streetValue = value('street');
+    const houseValue = value('house');
+    if (
+      deliveryId !== 'pickup' &&
+      (!regionValue || !localityValue || !streetValue || !houseValue)
+    ) {
+      setAddressError('Заполни обязательные поля адреса.');
       return;
     }
     setAddressError('');
     const addressParts = [
-      region?.label,
-      locality?.label,
-      settlement?.label,
-      street?.label,
-      house?.label,
+      regionValue,
+      localityValue,
+      value('settlement'),
+      streetValue,
+      houseValue,
       value('apartment'),
     ].filter((part): part is string => Boolean(part));
     const address =
@@ -287,8 +294,8 @@ export default function Home() {
                 hidden={deliveryId === 'pickup'}
               >
                 <p className="address-guide" id="address-guide">
-                  Начни вводить минимум 2 буквы и обязательно выбери вариант из
-                  списка. Следующее поле откроется после выбора.
+                  Введи адрес вручную или выбери подходящий вариант из
+                  подсказок.
                 </p>
                 <AddressCombobox
                   id="region"
@@ -321,7 +328,6 @@ export default function Home() {
                     setHouse(null);
                     setAddressError('');
                   }}
-                  disabled={!region}
                   required={deliveryId !== 'pickup'}
                   invalid={Boolean(addressError && !locality)}
                   regionFiasId={region?.regionFiasId}
@@ -339,7 +345,6 @@ export default function Home() {
                     setHouse(null);
                     setAddressError('');
                   }}
-                  disabled={!locality}
                   optional
                   regionFiasId={locality?.regionFiasId}
                   areaFiasId={locality?.areaFiasId}
@@ -357,7 +362,6 @@ export default function Home() {
                     setHouse(null);
                     setAddressError('');
                   }}
-                  disabled={!locality}
                   required={deliveryId !== 'pickup'}
                   invalid={Boolean(addressError && !street)}
                   regionFiasId={
@@ -378,7 +382,6 @@ export default function Home() {
                     setHouse(next);
                     setAddressError('');
                   }}
-                  disabled={!street}
                   required={deliveryId !== 'pickup'}
                   invalid={Boolean(addressError && !house)}
                   regionFiasId={

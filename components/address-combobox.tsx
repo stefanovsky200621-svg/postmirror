@@ -107,7 +107,7 @@ export function AddressCombobox({
       } catch (error) {
         if (error instanceof DOMException && error.name === 'AbortError') return;
         setSuggestions([]);
-        setRequestError('Подсказки не загрузились. Попробуй ещё раз.');
+        setRequestError('Подсказки недоступны — введи адрес вручную.');
       } finally {
         if (!controller.signal.aborted) setIsLoading(false);
       }
