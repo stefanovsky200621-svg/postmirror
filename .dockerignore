@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+.wrangler
+.vinext
+dist
+*.tar.gz
+.env*
+.codex*
+.tmp*
+Готовые презентации

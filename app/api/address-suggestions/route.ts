@@ -1,5 +1,3 @@
-import { env } from 'cloudflare:workers';
-
 const DADATA_URL =
   'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address';
 
@@ -63,8 +61,8 @@ export async function POST(request: Request) {
   }
   const level = body.level;
 
-  const workerEnv = env as typeof env & { DADATA_API_KEY?: string };
-  if (!workerEnv.DADATA_API_KEY) {
+  const apiKey = process.env.DADATA_API_KEY;
+  if (!apiKey) {
     return Response.json(
       { error: 'Сервис адресов временно недоступен.' },
       { status: 503 },
@@ -93,7 +91,7 @@ export async function POST(request: Request) {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `Token ${workerEnv.DADATA_API_KEY}`,
+        Authorization: `Token ${apiKey}`,
       },
       body: JSON.stringify({
         query,
