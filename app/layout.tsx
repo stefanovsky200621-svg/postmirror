@@ -7,11 +7,7 @@ const bodyFont = Manrope({
   subsets: ['latin', 'cyrillic'],
 });
 
-const siteUrl = new URL(
-  process.env.SITE_URL ??
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    'https://mirora-studio.stefanovskiy.chatgpt.site',
-);
+const siteUrl = new URL('https://postmirror.ru');
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
@@ -21,7 +17,18 @@ export const metadata: Metadata = {
   },
   description:
     'Зеркало с твоим ником, подписью и историей. Заполни форму и отправь готовое сообщение в Telegram или Instagram для подтверждения заказа.',
+  alternates: {
+    canonical: '/',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
+    url: '/',
+    siteName: 'POSTMIRROR',
+    locale: 'ru_RU',
+    type: 'website',
     title: 'POSTMIRROR | Зеркала на заказ',
     description:
       'Выбери размер и отправь готовый текст заказа в Telegram или Instagram.',
